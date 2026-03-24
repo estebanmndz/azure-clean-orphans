@@ -1,16 +1,21 @@
-### 🧾 README.md
-```md
-# Limpieza de Recursos Huérfanos en Azure
+# ✅ **6. azure-clean-orphans — README.md**
 
-Este script elimina:
+```md
+# 🧹 Azure Orphan Resources Cleaner (PowerShell)
+
+Este script detecta y elimina recursos huérfanos que generan costes innecesarios:
 
 ✅ Discos sin VM  
-✅ IPs públicas sin NIC  
 ✅ NICs sin VM  
+✅ IPs públicas sin NIC  
 
-Ideal para control de costes y mantenimiento cloud.
+## ✅ ¿Por qué es útil?
 
-## Uso
+Los recursos huérfanos son uno de los mayores culpables de costes ocultos en Azure.
+Este script ayuda a mantener entornos limpios y económicos.
+
+## ▶️ Uso
+
 ```powershell
 Connect-AzAccount
 ./clean-orphans.ps1
