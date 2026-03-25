@@ -1,27 +1,95 @@
-# Limpieza de recursos huérfanos en Azure
-# Discos sin VM, IPs sin NIC, NICs sin VM
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$ResourceGroup,
 
-Connect-AzAccount
+    [switch]$DryRun
+)
 
-$rg = "RG-Demo"
+# =========================
+# CONFIG
+# =========================
+$logFile = "cleanup.log"
 
-# Discos huérfanos
-$disks = Get-AzDisk -ResourceGroupName $rg | Where-Object { $_.ManagedBy -eq $null }
+function Log {
+    param([string]$message)
+
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $entry = "$timestamp - $message"
+
+    Write-Host $entry
+    $entry | Out-File -FilePath $logFile -Append
+}
+
+# =========================
+# LOGIN
+# =========================
+Log "🔐 Conectando a Azure..."
+Connect-AzAccount -ErrorAction Stop
+
+# =========================
+# VALIDACIÓN RG
+# =========================
+$rgExists = Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue
+
+if (-not $rgExists) {
+    Log "❌ Resource Group no existe: $ResourceGroup"
+    exit
+}
+
+Log "📦 Analizando recursos en: $ResourceGroup"
+
+# =========================
+# DISKS
+# =========================
+$disks = Get-AzDisk -ResourceGroupName $ResourceGroup | Where-Object { $_.ManagedBy -eq $null }
+
 foreach ($disk in $disks) {
-    Write-Host "Eliminando disco huérfano: $($disk.Name)"
-    Remove-AzDisk -ResourceGroupName $rg -DiskName $disk.Name -Force
+    if ($DryRun) {
+        Log "🟡 [SIMULACIÓN] Disco huérfano detectado: $($disk.Name)"
+    } else {
+        try {
+            Remove-AzDisk -ResourceGroupName $ResourceGroup -DiskName $disk.Name -Force -ErrorAction Stop
+            Log "🗑️ Disco eliminado: $($disk.Name)"
+        } catch {
+            Log "❌ Error eliminando disco: $($disk.Name)"
+        }
+    }
 }
 
-# IPs públicas huérfanas
-$ips = Get-AzPublicIpAddress -ResourceGroupName $rg | Where-Object { $_.IpConfiguration -eq $null }
+# =========================
+# PUBLIC IPs
+# =========================
+$ips = Get-AzPublicIpAddress -ResourceGroupName $ResourceGroup | Where-Object { $_.IpConfiguration -eq $null }
+
 foreach ($ip in $ips) {
-    Write-Host "Eliminando IP huérfana: $($ip.Name)"
-    Remove-AzPublicIpAddress -Name $ip.Name -ResourceGroupName $rg -Force
+    if ($DryRun) {
+        Log "🟡 [SIMULACIÓN] IP huérfana detectada: $($ip.Name)"
+    } else {
+        try {
+            Remove-AzPublicIpAddress -Name $ip.Name -ResourceGroupName $ResourceGroup -Force -ErrorAction Stop
+            Log "🗑️ IP eliminada: $($ip.Name)"
+        } catch {
+            Log "❌ Error eliminando IP: $($ip.Name)"
+        }
+    }
 }
 
-# NICs huérfanas
-$nics = Get-AzNetworkInterface -ResourceGroupName $rg | Where-Object { $_.VirtualMachine -eq $null }
+# =========================
+# NICs
+# =========================
+$nics = Get-AzNetworkInterface -ResourceGroupName $ResourceGroup | Where-Object { $_.VirtualMachine -eq $null }
+
 foreach ($nic in $nics) {
-    Write-Host "Eliminando NIC huérfana: $($nic.Name)"
-    Remove-AzNetworkInterface -Name $nic.Name -ResourceGroupName $rg -Force
+    if ($DryRun) {
+        Log "🟡 [SIMULACIÓN] NIC huérfana detectada: $($nic.Name)"
+    } else {
+        try {
+            Remove-AzNetworkInterface -Name $nic.Name -ResourceGroupName $ResourceGroup -Force -ErrorAction Stop
+            Log "🗑️ NIC eliminada: $($nic.Name)"
+        } catch {
+            Log "❌ Error eliminando NIC: $($nic.Name)"
+        }
+    }
 }
+
+Log "✅ Proceso completado"
