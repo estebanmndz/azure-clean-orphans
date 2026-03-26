@@ -1,16 +1,16 @@
 # 🧹 Azure Orphan Resources Cleaner (PowerShell)
 
 ![Azure](https://img.shields.io/badge/Azure-Cloud-blue)
-![PowerShell](https://img.shields.io/badge/PowerShell-Scripting-blue)
+![PowerShell](https://img.shields.io/badge/PowerShell-Automation-blue)
 ![FinOps](https://img.shields.io/badge/FinOps-Cost%20Optimization-green)
 
-> 💡 Reduce Azure costs by automatically detecting and cleaning orphaned resources in seconds
+> 💡 Reduce Azure costs by detecting and cleaning orphaned resources within a Resource Group
 
 ---
 
 ## 🧠 Overview
 
-This project automates the detection and cleanup of orphaned resources in Microsoft Azure, helping reduce unnecessary costs and improve cloud governance.
+This project automates the detection and cleanup of orphaned resources in **Microsoft Azure Resource Groups**, helping reduce unnecessary costs and improve cloud governance.
 
 It is designed with a practical **FinOps mindset**, simulating real-world operational tasks performed by Cloud/DevOps engineers.
 
@@ -24,7 +24,7 @@ It is designed with a practical **FinOps mindset**, simulating real-world operat
 
 ## 💸 Problem Statement
 
-In real Azure environments, it is common that after deleting primary resources (such as Virtual Machines), associated resources remain and continue generating costs.
+In Azure environments, it is common that after deleting primary resources (such as Virtual Machines), associated resources remain and continue generating costs.
 
 Typical orphaned resources include:
 
@@ -52,19 +52,21 @@ Automating their cleanup:
 
 This project provides a PowerShell script that:
 
-* Identifies orphaned resources within a Resource Group
+* Authenticates against Azure
+* Scans a specific Resource Group
+* Detects orphaned resources
 * Supports a safe execution mode (**DryRun**)
 * Deletes unused resources in a controlled manner
-* Logs all actions for traceability and auditing
+* Logs all actions for traceability
 
 ---
 
 ## 🔄 Execution Flow
 
 ```
-[Azure Resource Group]
+[Azure Login]
         ↓
-[Script Execution]
+[Select Resource Group]
         ↓
 [Discover Resources]
         ↓
@@ -102,20 +104,22 @@ The script currently handles:
 
 The script performs the following steps:
 
-1. Authenticates against Azure
-2. Retrieves resources using Azure PowerShell (Az module)
-3. Applies filtering logic to detect orphaned resources
-4. Executes conditional logic (DryRun vs actual deletion)
-5. Logs all actions and errors
+1. Authenticates against Azure using `Connect-AzAccount`
+2. Validates the existence of the target Resource Group
+3. Retrieves resources using Azure PowerShell (Az module)
+4. Applies filtering logic to detect orphaned resources
+5. Executes conditional logic (DryRun vs actual deletion)
+6. Logs all actions and errors
 
 ---
 
 ## 🔐 Security & Safety
 
 * **DryRun mode is strongly recommended before execution**
-* No destructive actions without explicit user intent
+* Uses interactive authentication via `Connect-AzAccount`
 * Requires appropriate Azure RBAC permissions
 * Designed to minimize risk in production environments
+* Can be extended to use **Managed Identity** or **Service Principal** for automation
 
 ---
 
@@ -124,9 +128,10 @@ The script performs the following steps:
 This script can be used by cloud teams to:
 
 * Perform periodic cleanups in non-production environments
-* Integrate into automation workflows (Azure Automation / Runbooks)
-* Support FinOps strategies for cost optimization
-* Maintain clean and controlled Azure environments
+* Reduce unnecessary Azure costs
+* Support FinOps strategies
+* Maintain clean and controlled Resource Groups
+* Serve as a base for automation (Azure Automation / Runbooks)
 
 ---
 
@@ -148,7 +153,7 @@ Connect-AzAccount
 
 ```
 🟡 [SIMULATION] Orphan disk detected: disk01
-🗑️ Public IP deleted: ip-demo
+🗑️ IP deleted: ip-demo
 🗑️ NIC deleted: nic-demo
 
 ✅ Process completed
@@ -160,11 +165,12 @@ A log file (`cleanup.log`) is also generated with full execution details.
 
 ## 🚀 Future Improvements
 
+* Subscription-wide cleanup (multi-Resource Group)
+* Authentication via Managed Identity / Service Principal
 * Integration with Azure Automation (Runbooks)
 * Scheduled execution (automation)
-* Pre-deletion alerting system
+* Alerts before deletion
 * Integration with Azure Monitor / Log Analytics
-* Multi-Resource Group / Subscription support
 
 ---
 
