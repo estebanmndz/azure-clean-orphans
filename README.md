@@ -1,10 +1,18 @@
 # 🧹 Azure Orphan Resources Cleaner (PowerShell)
 
+![Azure](https://img.shields.io/badge/Azure-Cloud-blue)
+![PowerShell](https://img.shields.io/badge/PowerShell-Scripting-blue)
+![FinOps](https://img.shields.io/badge/FinOps-Cost%20Optimization-green)
+
+> 💡 Reduce Azure costs by automatically detecting and cleaning orphaned resources in seconds
+
+---
+
 ## 🧠 Overview
 
 This project automates the detection and cleanup of orphaned resources in Microsoft Azure, helping reduce unnecessary costs and improve cloud governance.
 
-It is designed with a practical **FinOps mindset**, simulating real-world operational tasks in cloud environments.
+It is designed with a practical **FinOps mindset**, simulating real-world operational tasks performed by Cloud/DevOps engineers.
 
 **Technologies used:**
 
@@ -24,7 +32,19 @@ Typical orphaned resources include:
 * Network interfaces (NICs) without association
 * Unassigned public IP addresses
 
-Without proper visibility or automation, these resources are often overlooked.
+Without automation, these resources are often overlooked, leading to unnecessary cloud spending.
+
+---
+
+## 🎯 Why This Matters
+
+Orphaned resources represent a hidden cost in cloud environments.
+
+Automating their cleanup:
+
+* Improves cost efficiency (**FinOps**)
+* Reduces manual operational workload
+* Enhances governance and resource hygiene
 
 ---
 
@@ -33,9 +53,27 @@ Without proper visibility or automation, these resources are often overlooked.
 This project provides a PowerShell script that:
 
 * Identifies orphaned resources within a Resource Group
-* Supports a safe execution mode (**DryRun**) to prevent accidental deletions
-* Removes unused resources in a controlled way
+* Supports a safe execution mode (**DryRun**)
+* Deletes unused resources in a controlled manner
 * Logs all actions for traceability and auditing
+
+---
+
+## 🔄 Execution Flow
+
+```
+[Azure Resource Group]
+        ↓
+[Script Execution]
+        ↓
+[Discover Resources]
+        ↓
+[Filter Orphans]
+        ↓
+[DryRun] OR [Delete]
+        ↓
+[Log Results]
+```
 
 ---
 
@@ -60,12 +98,35 @@ The script currently handles:
 
 ---
 
+## 🧩 How It Works
+
+The script performs the following steps:
+
+1. Authenticates against Azure
+2. Retrieves resources using Azure PowerShell (Az module)
+3. Applies filtering logic to detect orphaned resources
+4. Executes conditional logic (DryRun vs actual deletion)
+5. Logs all actions and errors
+
+---
+
 ## 🔐 Security & Safety
 
 * **DryRun mode is strongly recommended before execution**
 * No destructive actions without explicit user intent
 * Requires appropriate Azure RBAC permissions
 * Designed to minimize risk in production environments
+
+---
+
+## 🌍 Real-World Use Case
+
+This script can be used by cloud teams to:
+
+* Perform periodic cleanups in non-production environments
+* Integrate into automation workflows (Azure Automation / Runbooks)
+* Support FinOps strategies for cost optimization
+* Maintain clean and controlled Azure environments
 
 ---
 
