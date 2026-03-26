@@ -1,84 +1,119 @@
 # 🧹 Azure Orphan Resources Cleaner (PowerShell)
 
-## 🧠 Descripción
+## 🧠 Overview
 
-Este proyecto automatiza la detección y limpieza de recursos huérfanos en Azure, ayudando a reducir costes innecesarios y mejorar la gobernanza de entornos cloud.
+This project automates the detection and cleanup of orphaned resources in Microsoft Azure, helping reduce unnecessary costs and improve cloud governance.
 
-Está enfocado en prácticas de **FinOps** y mantenimiento de infraestructura en entornos reales.
+It is designed with a practical **FinOps mindset**, simulating real-world operational tasks in cloud environments.
 
----
+**Technologies used:**
 
-## 💸 Problema que resuelve
-
-En Azure es habitual que, tras eliminar máquinas virtuales u otros recursos, queden elementos sin uso que siguen generando costes:
-
-* Discos gestionados sin asociar
-* Interfaces de red sin uso
-* IPs públicas no asignadas
-
-Este script detecta y elimina automáticamente estos recursos.
+* Azure PowerShell (Az Module)
+* PowerShell scripting
+* Azure Resource Manager
 
 ---
 
-## 🔍 Recursos gestionados
+## 💸 Problem Statement
 
-* Discos sin VM (`ManagedBy = null`)
-* NICs sin VM asociada
-* IPs públicas sin configuración
+In real Azure environments, it is common that after deleting primary resources (such as Virtual Machines), associated resources remain and continue generating costs.
 
----
+Typical orphaned resources include:
 
-## ⚙️ Características técnicas
+* Managed disks not attached to any VM
+* Network interfaces (NICs) without association
+* Unassigned public IP addresses
 
-* Script parametrizado
-* Modo simulación (**DryRun**) sin eliminación real
-* Logging detallado en fichero
-* Manejo de errores con `try/catch`
-* Validación de Resource Group
-* Uso de Azure PowerShell (Az module)
+Without proper visibility or automation, these resources are often overlooked.
 
 ---
 
-## ▶️ Uso
+## 🏗️ Solution
+
+This project provides a PowerShell script that:
+
+* Identifies orphaned resources within a Resource Group
+* Supports a safe execution mode (**DryRun**) to prevent accidental deletions
+* Removes unused resources in a controlled way
+* Logs all actions for traceability and auditing
+
+---
+
+## 🔍 Managed Resources
+
+The script currently handles:
+
+* **Managed Disks** → `ManagedBy = null`
+* **Network Interfaces (NICs)** → not attached to any VM
+* **Public IPs** → not associated with any configuration
+
+---
+
+## ⚙️ Technical Highlights
+
+* Parameterized script for reusability
+* Safe execution mode (**DryRun**)
+* Persistent logging (`cleanup.log`)
+* Error handling using `try/catch`
+* Resource Group validation
+* Built using the official **Az module**
+
+---
+
+## 🔐 Security & Safety
+
+* **DryRun mode is strongly recommended before execution**
+* No destructive actions without explicit user intent
+* Requires appropriate Azure RBAC permissions
+* Designed to minimize risk in production environments
+
+---
+
+## ▶️ Usage
 
 ```powershell
 Connect-AzAccount
 
-# Simulación (recomendado)
+# Simulation mode (recommended)
 .\clean-orphans.ps1 -ResourceGroup "RG-Demo" -DryRun
 
-# Ejecución real
+# Real execution
 .\clean-orphans.ps1 -ResourceGroup "RG-Demo"
 ```
 
 ---
 
-## 📊 Output
+## 📊 Example Output
 
 ```
-🟡 [SIMULACIÓN] Disco huérfano detectado: disk01
-🗑️ IP eliminada: ip-demo
-🗑️ NIC eliminada: nic-demo
+🟡 [SIMULATION] Orphan disk detected: disk01
+🗑️ Public IP deleted: ip-demo
+🗑️ NIC deleted: nic-demo
 
-✅ Proceso completado
+✅ Process completed
 ```
 
-Además, se genera un fichero de log (`cleanup.log`) con el detalle de ejecución.
+A log file (`cleanup.log`) is also generated with full execution details.
 
 ---
 
-## ⚠️ Consideraciones
+## 🚀 Future Improvements
 
-* Ejecutar primero en modo **DryRun**
-* Requiere permisos adecuados en Azure
-* Uso recomendado en entornos controlados o con validación previa
+* Integration with Azure Automation (Runbooks)
+* Scheduled execution (automation)
+* Pre-deletion alerting system
+* Integration with Azure Monitor / Log Analytics
+* Multi-Resource Group / Subscription support
 
 ---
 
-## 🚀 Mejoras futuras
+## 📌 Key Takeaways
 
-* Integración con Azure Automation (Runbooks)
-* Programación automática (tareas recurrentes)
-* Alertas previas a eliminación
-* Integración con Azure Monitor / Log Analytics
-* Soporte multi-Resource Group
+This project demonstrates:
+
+* Automation of operational tasks in Azure
+* Cost optimization practices (**FinOps**)
+* Safe scripting principles (logging, validation, error handling)
+* Real-world cloud engineering mindset
+
+---
